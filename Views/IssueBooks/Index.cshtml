@@ -1,0 +1,58 @@
+﻿@model LibraryManagmentSystem.Models.IssuebooksViewModel
+@{
+    ViewBag.Title = "LendBooks";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+<p>
+    @Html.ActionLink("Create New", "Create")
+    |
+    @Html.ActionLink("Books", "Index", "Books")
+    |
+    @Html.ActionLink("Members", "Index", "Members")
+</p>
+<br />
+<br />
+<h2>Lend Books</h2>
+@using (Html.BeginForm("AddBookToStudentAccount", "IssueBooks", FormMethod.Post))
+{
+    <div class="form-group">
+        <b>@ViewBag.MemberName</b>(@ViewBag.MemberType)
+        @Html.HiddenFor(model => model.MemberId)
+
+        <br /><br /><br />
+        <b>Select Book To Be issued</b>
+        @Html.DropDownList("ObjList", (IEnumerable<SelectListItem>)ViewBag.ListBook, new { id = "ddlBook", @class = "form-control" })
+        <input id="submit" type="submit" value="Add" />
+        @*@Html.ActionLink("Add", "AddBookToStudentAccount", "IssueBooks",null, new { id = ViewBag.MemberID, @class = "Button" })*@
+    </div>
+}
+<div>
+    <h1>Books Issued</h1>
+    @{ int i = 0;}
+    @foreach (var item in ViewBag.BooksIssuedToStudent)
+    {
+        <li>
+            @item<input onclick="RemoveItem(this);" attr-MemberId="@Model.MemberId" attr-data="@item" id="RemoveItem" type="submit" value="x" style="color: red; font-weight: bold; margin-left: 150px;" />
+        </li>
+        i++;
+    }
+</div>
+<script>
+    function RemoveItem(sender) {
+        debugger;
+        var data = sender.attributes[2].value.split(',');
+        var memberId = sender.attributes[1].value;
+        $.ajax({
+            url: "/IssueBooks/RemoveBooks",
+            data: {
+                id: data[0],
+                MemId: memberId
+            },
+            success: function (success) {
+                sender.parentElement.remove();
+            }
+        });
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
